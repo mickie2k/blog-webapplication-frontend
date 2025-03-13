@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { FormEvent } from "react";
-import { useRouter } from "next/navigation";
-import cookies from "js-cookie";
-import axiosInstance from "@/utils/http";
 import { FcGoogle } from "react-icons/fc";
+import {axiosInstance} from "@/utils/http";
+import { useRouter } from "next/navigation";
+
 export default function LoginhtmlForm() {
 	const router = useRouter();
+	// const auth = useAuth();
 	const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
 
@@ -16,37 +17,30 @@ export default function LoginhtmlForm() {
 		formData.forEach((value, key) => {
 			formDataJson[key] = value;
 		});
-
-		// const response = await fetch(
-		// 	`${process.env.NEXT_PUBLIC_API_URL}/auth/login`,
-		// 	{
-		// 		method: "POST",
-		// 		headers: {
-		// 			"Content-Type": "application/json", // Set the content type to JSON
-		// 		},
-		// 		credentials: "include",
-		// 		body: JSON.stringify(formDataJson),
-		// 	}
-		// );
-		// if (response.status !== 200) {
-		// 	alert("Your username or password is incorrect");
-		// }
-		// if (response.status === 200) {
-		// 	cookies.set("isAuth", "true");
-		// 	router.push("/");
-		// }
-
+		
 		try {
-			const response = await axiosInstance.post("/auth/login", formDataJson);
-			
-			 if (response.status === 201) {
-				cookies.set("isAuth", "true");
-				router.push("/");
+			const response = await axiosInstance.post("/auth/login", formDataJson).then((response) => {
+				if(response.status == 201){
+					router.push("/user");
+				}else{
+					alert(response.data.message)
+				}
 			}
-		} catch (error) {
+			).catch((error) => {
+				// Handle error here
+				alert(error.response.data.message)
+			});
 			
+			
+		} catch (error) {
+            console.error('Logout failed:', error);
 		}
 
+		// try {
+		// 	await auth.login(formDataJson);  // Make sure login is awaited
+		//   } catch (error) {
+		// 	console.error("Login failed:", error);
+		//   }
 	};
 
 	const onGoogleSubmit = async()=>{
@@ -113,8 +107,10 @@ export default function LoginhtmlForm() {
 								</Link>
 							</p>
 						</form>
-						<div>
-							or
+						<div className="flex items-center justify-between gap-4">
+							<hr className="border-neutral-300 w-full" />
+							<span>or</span>
+							<hr className="border-neutral-300 w-full" />
 						</div>
 						<div>
 							

@@ -1,5 +1,5 @@
 'use client'
-import axiosInstance from "@/utils/http";
+import {axiosJWTInstance} from "@/utils/http";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
@@ -11,7 +11,7 @@ export default function TestPage() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axiosInstance.get("/auth");
+                const response = await axiosJWTInstance.get("/auth");
                 if (response.status === 200) {
                     const {id} = response.data;
                     setData(id);

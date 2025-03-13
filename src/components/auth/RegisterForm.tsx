@@ -1,10 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { FormEvent } from "react";
+import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
+import { axiosInstance } from "@/utils/http";
+import PasswordChecklist from "react-password-checklist"
 
 export default function RegisterForm() {
+	const [password, setPassword] = useState("")
 	const router = useRouter();
 	const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
@@ -15,26 +18,26 @@ export default function RegisterForm() {
 			formDataJson[key] = value;
 		});
 
-		const response = await fetch(
-			`${process.env.NEXT_PUBLIC_API_URL}user/register`,
-			{
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json", // Set the content type to JSON
-				},
-				body: JSON.stringify(formDataJson),
+
+		const response = await axiosInstance.post(
+			"/auth/register",
+			formDataJson
+		).then((response) => {
+			if(response.status == 201){
+				alert("Register success")
+				router.push("/login")
+			}else{
+				alert(response.data.message)
 			}
-		);
-		if (response.status !== 200) {
-			alert("This username have already been taken");
-			return;
 		}
-		if (response.status === 200) {
-			// cookies.set("isAuth", "true");
-			// router.push("/");
-			alert("Register success");
-			router.push("/login");
-		}
+		).catch((error) => {
+			// Handle error here
+			alert(error.response.data.message)
+		})
+		
+		
+
+		
 	};
 	return (
 		<section className="bg-white mt-7">
@@ -54,16 +57,16 @@ export default function RegisterForm() {
 								</label>
 								<input
 									type="text"
-									name="fname"
-									id="fname"
+									name="firstName"
+									id="firstName"
 									className="bg-gray-50 border border-gray-300 text-gray-900 rounded-t-lg  block w-full p-2.5 "
 									placeholder="First name"
 									required
 								/>
 								<input
 									type="text"
-									name="lname"
-									id="lname"
+									name="lastName"
+									id="lastName"
 									className="bg-gray-50 border border-gray-300 text-gray-900 rounded-b-lg  block w-full p-2.5 "
 									placeholder="Last name"
 									required
@@ -87,6 +90,22 @@ export default function RegisterForm() {
 							</div>
 							<div>
 								<label
+									htmlFor="username"
+									className="block mb-2 text-sm font-medium text-gray-900 "
+								>
+									Your Email
+								</label>
+								<input
+									type="email"
+									name="email"
+									id="email"
+									className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg  block w-full p-2.5 "
+									placeholder="email"
+									required
+								/>
+							</div>
+							<div>
+								<label
 									htmlFor="password"
 									className="block mb-2 text-sm font-medium text-gray-900 "
 								>
@@ -99,12 +118,21 @@ export default function RegisterForm() {
 									placeholder="••••••••"
 									className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg  block w-full p-2.5"
 									required
+									onChange={e => setPassword(e.target.value)}
 								/>
+
+							{password && (<PasswordChecklist
+									rules={["minLength","specialChar","number","capital"]}
+									minLength={8}
+									value={password}
+									onChange={(isValid) => {}}
+								/>)}
+								
 							</div>
 
 							<button
 								type="submit"
-								className="w-full text-white bg-primary1 hover:bg-primary1_hover focus:ring-4 focus:outline-none  font-medium rounded-lg text-sm px-5 py-2.5 text-center  "
+								className="w-full text-white bg-black hover:bg-neutral-900 focus:ring-4 focus:outline-none  font-medium rounded-lg text-sm px-5 py-2.5 text-center cursor-pointer "
 							>
 								Sign up
 							</button>
