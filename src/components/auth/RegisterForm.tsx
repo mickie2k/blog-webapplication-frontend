@@ -8,33 +8,36 @@ import PasswordChecklist from "react-password-checklist"
 
 export default function RegisterForm() {
 	const [password, setPassword] = useState("")
+	const [passwordValid, setPasswordValid] = useState(false)
 	const router = useRouter();
 	const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
-		event.preventDefault();
+		if(passwordValid){
 
-		const formData = new FormData(event.currentTarget);
-		const formDataJson: { [key: string]: FormDataEntryValue } = {};
-		formData.forEach((value, key) => {
-			formDataJson[key] = value;
-		});
+			event.preventDefault();
+
+			const formData = new FormData(event.currentTarget);
+			const formDataJson: { [key: string]: FormDataEntryValue } = {};
+			formData.forEach((value, key) => {
+				formDataJson[key] = value;
+			});
 
 
-		const response = await axiosInstance.post(
-			"/auth/register",
-			formDataJson
-		).then((response) => {
-			if(response.status == 201){
-				alert("Register success")
-				router.push("/login")
-			}else{
-				alert(response.data.message)
+			const response = await axiosInstance.post(
+				"/auth/register",
+				formDataJson
+			).then((response) => {
+				if(response.status == 201){
+					alert("Register success")
+					router.push("/login")
+				}else{
+					alert(response.data.message)
+				}
 			}
-		}
-		).catch((error) => {
-			// Handle error here
-			alert(error.response.data.message)
-		})
-		
+			).catch((error) => {
+				// Handle error here
+				alert(error.response.data.message)
+			})
+	}
 		
 
 		
@@ -47,7 +50,7 @@ export default function RegisterForm() {
 				</h1>
 				<div className="w-full bg-transparent border-[#E2E2E2]  border-t  md:mt-0 sm:max-w-md xl:p-0 ">
 					<div className="p-6 space-y-4 md:space-y-6 sm:p-8">
-						<form className="space-y-4 md:space-y-6" onSubmit={onSubmit}>
+						<form className="space-y-4 md:space-y-6" onSubmit={onSubmit} method="POST">
 							<div>
 								<label
 									htmlFor="name"
@@ -122,17 +125,18 @@ export default function RegisterForm() {
 								/>
 
 							{password && (<PasswordChecklist
-									rules={["minLength","specialChar","number","capital"]}
+									rules={["minLength","specialChar","number","capitalAndLowercase"]}
 									minLength={8}
 									value={password}
-									onChange={(isValid) => {}}
+									onChange={(isValid) => {setPasswordValid(isValid)}}
 								/>)}
 								
 							</div>
 
 							<button
 								type="submit"
-								className="w-full text-white bg-black hover:bg-neutral-900 focus:ring-4 focus:outline-none  font-medium rounded-lg text-sm px-5 py-2.5 text-center cursor-pointer "
+								disabled={!passwordValid}
+								className= "disabled:opacity-20 disabled:cursor-not-allowed w-full text-white bg-black hover:bg-neutral-900 focus:ring-4 focus:outline-none  font-medium rounded-lg text-sm px-5 py-2.5 text-center cursor-pointer "
 							>
 								Sign up
 							</button>

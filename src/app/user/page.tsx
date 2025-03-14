@@ -10,10 +10,10 @@ export default function UserProfile() {
             try {
                 const response = await axiosJWTInstance.get("/user/username");
                 if(response){
-                    if(response.status == 200){
+                    
                         const {username} = response.data;
                         setUser(username);
-                    }
+                    
                 }
             } catch (error) {
                 console.error('Error fetching user data:', error);
