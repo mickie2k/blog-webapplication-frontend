@@ -19,7 +19,7 @@ export default function LoginhtmlForm() {
 		});
 		
 		try {
-			const response = await axiosInstance.post("/auth/login", formDataJson).then((response) => {
+			await axiosInstance.post("/auth/login", formDataJson).then((response) => {
 				if(response.status == 201){
 					router.push("/user");
 				}else{

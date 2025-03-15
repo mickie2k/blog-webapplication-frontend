@@ -1,6 +1,6 @@
 'use client'
 import {axiosJWTInstance} from "@/utils/http";
-import Image from "next/image";
+
 import { useEffect, useState } from "react";
 
 export default function TestPage() {

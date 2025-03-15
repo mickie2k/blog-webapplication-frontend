@@ -22,7 +22,7 @@ export default function RegisterForm() {
 			});
 
 
-			const response = await axiosInstance.post(
+			await axiosInstance.post(
 				"/auth/register",
 				formDataJson
 			).then((response) => {

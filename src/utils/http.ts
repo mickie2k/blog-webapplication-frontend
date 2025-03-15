@@ -29,7 +29,7 @@ axiosJWTInstance.interceptors.response.use((response)=>{
       if(error.response.status === 401 && !originalRequest._retry) {
         originalRequest._retry = true;
         try {
-            const response = await axios.post(`${API_HOST}/auth/refresh`, {}, { withCredentials: true });
+            await axios.post(`${API_HOST}/auth/refresh`, {}, { withCredentials: true });
                 // const { accessToken } = response.data;
                 return axiosJWTInstance(originalRequest);
             
