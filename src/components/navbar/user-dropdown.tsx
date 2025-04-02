@@ -30,10 +30,12 @@ export default function UserDropDown(props: Readonly<UserDropDownProps>) {
                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
-                    {/* <DropdownMenuItem>
+                    <Link href="/user/me">
+                    <DropdownMenuItem>
                         Profile
                         
-                    </DropdownMenuItem>  */}
+                    </DropdownMenuItem> 
+                    </Link>
                     <Link href="/user">
                         <DropdownMenuItem>
                             Blogs

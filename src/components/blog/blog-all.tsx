@@ -1,25 +1,16 @@
 
 import BlogCard from './blog-card'
-import { API_URL } from '@/utils/constants';
 import { Blog } from '@/types/blog';
 import _ from 'lodash'
-import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
-import { AlertCircle } from 'lucide-react';
 
-export default async function BlogAll() {
-  const data = await fetch(`${API_URL}/blog`,{
-    cache: 'no-store',
-  });
-  const blogs: Blog[] = await data.json()
-  if (!data.ok) {
-    return (
-      <Alert variant='default' className='col-span-3'>
-        <AlertCircle className="h-4 w-4" />
-        <AlertTitle>Failed to fetch blogs</AlertTitle>
-        <AlertDescription>Something went wrong, please try again</AlertDescription>
-      </Alert>
-    )
-  }
+
+interface BlogAllProps {
+  blogs: Blog[]
+}
+
+export default async function BlogAll(props : Readonly<BlogAllProps>) {
+  const { blogs } = props
+
 
 
   return (
