@@ -5,10 +5,10 @@ import { useAuth } from "@/context/auth-context";
 import UserDropDown from "./user-dropdown";
 import Logo from "../logo/logo";
 import { PiNotePencilLight, PiSignInLight } from "react-icons/pi";
-export default function navbar() {
+export default function Navbar() {
     const { user, isAuthenticated,logout } = useAuth();
     return (
-        <div className="flex flex-row w-full justify-between items-center border-b border-border h-16 px-6">
+        <div className="relative flex flex-row w-full justify-between items-center border-b border-border h-16 px-6 z-[99]">
             <Link href="/"><Logo/></Link>
             <div className="flex gap-4">
                 {isAuthenticated && user ? 

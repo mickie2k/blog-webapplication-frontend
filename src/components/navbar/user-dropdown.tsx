@@ -7,22 +7,19 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
     DropdownMenuGroup,
-    DropdownMenuShortcut,
-    DropdownMenuSub,
-    DropdownMenuSubTrigger,
-    DropdownMenuSubContent,
-    DropdownMenuPortal,
+   
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
 import { User } from '@/types/user'
 import Link from 'next/link'
+import { Role } from '@/enum/role.enum'
 
 interface UserDropDownProps {
     logout: () => void
     user: User
 }
 
-export default function UserDropDown(props: UserDropDownProps) {
+export default function UserDropDown(props: Readonly<UserDropDownProps>) {
     const { logout, user } = props
     return (
         <DropdownMenu>
@@ -33,19 +30,28 @@ export default function UserDropDown(props: UserDropDownProps) {
                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
-                    <DropdownMenuItem>
+                    {/* <DropdownMenuItem>
                         Profile
                         
-                    </DropdownMenuItem> 
+                    </DropdownMenuItem>  */}
                     <Link href="/user">
                         <DropdownMenuItem>
                             Blogs
                         </DropdownMenuItem>
                     </Link>
-                    <DropdownMenuItem>
+                    
+                    {user.role === Role.ADMIN && (
+                        <Link href="/admin/dashboard">
+                        <DropdownMenuItem>
+                            Admin
+                        </DropdownMenuItem>
+                        </Link>
+                    )}
+                   
+                    {/* <DropdownMenuItem>
                         Settings
                       
-                    </DropdownMenuItem>
+                    </DropdownMenuItem> */}
                     
                 </DropdownMenuGroup>
                

@@ -1,19 +1,26 @@
 import React from 'react'
 import { Card, CardTitle, CardDescription, CardHeader, CardContent, CardFooter } from '../ui/card'
 import Link  from 'next/link'
+import { Blog } from '@/types/blog'
+import { PiStarFourFill } from "react-icons/pi";
 
-export default function BlogCard() {
+interface BlogCardProps {
+    blog : Blog
+}
+
+export default function BlogCard(props :  Readonly<BlogCardProps>) {
     return (
-        <Link href="/blog/1">
-            <Card className='gap-4'>
+        <Link href={`/blog/${props.blog.id}`} >
+            <Card className='gap-4 h-full'>
                 <CardHeader>
-                    <CardTitle className='text-2xl font-bold max-w-full text-wrap overflow-clip line-clamp-2'>Hello This Blog</CardTitle>
+                    <CardTitle className='text-2xl font-bold max-w-full text-wrap overflow-clip line-clamp-2'>{props.blog.title}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <p className='line-clamp-4'>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quaerat molestiae voluptate alias, aspernatur nam fugiat ut reprehenderit similique fugit. Doloribus eveniet sequi autem esse quis, ducimus impedit hic explicabo dolorum, dicta est.</p>
+                    <p className='line-clamp-4'>{props.blog.content}</p>
                 </CardContent>
-                <CardFooter>
-                    <CardDescription>Mickie2k</CardDescription>
+                <CardFooter className='gap-2 mt-auto'>
+                    <CardDescription>{props.blog.authorName}</CardDescription>
+                    {props.blog.isPremium &&<PiStarFourFill className='w-3 text-yellow-500' />}
                 </CardFooter>
             </Card>
         </Link>

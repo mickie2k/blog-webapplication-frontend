@@ -1,30 +1,44 @@
 import React from 'react'
-import { Card, CardTitle, CardDescription, CardHeader, CardContent, CardFooter, CardAction } from '@/components/ui/card'
+import { Card, CardTitle, CardHeader, CardContent, CardFooter } from '@/components/ui/card'
 import Link  from 'next/link'
-import { PiArrowSquareOutLight, PiNotePencilLight } from 'react-icons/pi'
+import { PiArrowSquareOutLight, PiNotePencilLight, PiStarFourFill } from 'react-icons/pi'
 import { Button } from '@/components/ui/button'
-import { Separator } from '@/components/ui/separator'
+import { Blog } from '@/types/blog'
+import DeleteButton from '@/components/ui/delete-button'
+
+interface BlogCardProps {
+    blog : Blog
+    handleDelete : (id:string) => void
+}
 
 
-export default function BlogEditCard() {
+export default function BlogEditCard(props :  Readonly<BlogCardProps>) {
+    const { blog , handleDelete } = props;
+
+
+
     return (
         
             <Card className='gap-4'>
                 <CardHeader>
-                    <CardTitle className='text-2xl font-bold max-w-full text-wrap overflow-clip line-clamp-2'>Hello This Blog</CardTitle>
+                    <CardTitle className='text-2xl font-bold max-w-full text-wrap overflow-clip line-clamp-2'>{blog.title}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <p className='line-clamp-4'>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quaerat molestiae voluptate alias, aspernatur nam fugiat ut reprehenderit similique fugit. Doloribus eveniet sequi autem esse quis, ducimus impedit hic explicabo dolorum, dicta est.</p>
+                    <p className='line-clamp-4'>{blog.content}</p>
                     
                 </CardContent>
                
                 <CardFooter className='flex-col'>
                      
-                        <div className='flex gap-4 w-full justify-end'>
-
-                        
-                        <Link href="" ><Button variant="ghost"><PiArrowSquareOutLight/> Open</Button></Link>
-                        <Link href="" ><Button variant="ghost"><PiNotePencilLight/> Edit</Button></Link>
+                       
+                        <div className='flex gap-4 w-full justify-end items-center'>
+                       
+                       
+                            {blog.isPremium &&<PiStarFourFill className='w-3 text-yellow-500' />}
+                            <Link href={`blog/${blog.id}`} ><Button variant="ghost"><PiArrowSquareOutLight/> Open</Button></Link>
+                            <Link href={`user/edit-blog/${blog.id}`} ><Button variant="ghost"><PiNotePencilLight/> Edit</Button></Link>
+                            <DeleteButton handleOnClick={()=>{handleDelete(blog.id)}}/>
+                       
                     </div>
                     
                 </CardFooter>

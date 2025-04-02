@@ -7,27 +7,30 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Button } from "../ui/button"
 import { useRouter } from 'next/navigation'
 import { axiosJWTInstance } from '@/utils/http'
-import { UserData } from '@/types/usertable'
+import { BlogDataTable } from '@/types/blogtable'
 import { handleErrorAdmin } from './handle-error-admin'
 
 
-export default function DataTable() {
-  const [data , setData] = useState<UserData[]>([])
+
+
+export default function DataBlogTable() {
+  const [data , setData] = useState<BlogDataTable[]>([])
   const router = useRouter()
 
 
+
   useEffect(()=>{
-    const fetchUserTable = async () => {
+    const fetchBlogTable = async () => {
       try {
-        const res = await axiosJWTInstance.get('/admin/user')
+        const res = await axiosJWTInstance.get('/admin/blog')
         const data = res.data
         setData(data)
       } catch (error) {
-        handleErrorAdmin(error,router);
+       handleErrorAdmin(error,router);
       }
       
     }
-    fetchUserTable()
+    fetchBlogTable()
   },[router])
 
   return (
@@ -39,25 +42,26 @@ export default function DataTable() {
         <TableHeader className='sticky top-0 z-10 bg-muted'>
           <TableRow>
             <TableHead className='w-[100px]'>ID</TableHead>
-            <TableHead>Email</TableHead>
-            <TableHead>Username</TableHead>
-            <TableHead>Firstname</TableHead>
-            <TableHead>Lastname</TableHead>
-            <TableHead>Role</TableHead>
+            <TableHead>Title</TableHead>
+            <TableHead>Premium</TableHead>
+            <TableHead>Author</TableHead>
+            <TableHead>Created At</TableHead>
+            <TableHead>Updated At</TableHead>
+
             <TableHead className='text-right'></TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {data.map((user) => (
-            <TableRow key={user.id} className='hover:bg-muted'>
-              <TableCell className="font-medium">{user.id}</TableCell>
-              <TableCell>{user.email}</TableCell>
-              <TableCell>{user.username}</TableCell>
-              <TableCell>{user.firstName}</TableCell>
-              <TableCell>{user.lastName}</TableCell>
-              <TableCell>{user.roleid}</TableCell>
+          {data.map((item) => (
+            <TableRow key={item.id} className='hover:bg-muted'>
+              <TableCell className="font-medium">{item.id}</TableCell>
+              <TableCell>{item.title}</TableCell>
+              <TableCell>{item.isPremium?'Premium':'-'}</TableCell>
+              <TableCell>{item.username}</TableCell>
+              <TableCell>{item.createdAt}</TableCell>
+              <TableCell>{item.updatedAt}</TableCell>
 
-              <TableCell className='text-right'><MoreButtonDropdownUser/></TableCell>
+              <TableCell className='text-right'><MoreButtonDropdownBlog/></TableCell>
             </TableRow>
           ))}
           
@@ -69,7 +73,7 @@ export default function DataTable() {
 }
 
 
-function MoreButtonDropdownUser(){
+function MoreButtonDropdownBlog(){
   return(
     <DropdownMenu>
         <DropdownMenuTrigger asChild>

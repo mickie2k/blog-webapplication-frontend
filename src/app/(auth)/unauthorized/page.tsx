@@ -1,10 +1,7 @@
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import React from 'react'
-import { FiLock } from 'react-icons/fi'
 import { GoLock } from 'react-icons/go'
-import { LuLock } from 'react-icons/lu'
-import { PiLockSimpleLight } from 'react-icons/pi'
 
 export default function UnauthorizedPage() {
   return (

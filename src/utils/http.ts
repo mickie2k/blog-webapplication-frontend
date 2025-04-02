@@ -1,7 +1,8 @@
-import { useAuth } from "@/context/auth-context";
+
 import axios from "axios";
 
-const API_HOST = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+
+const API_HOST = process.env.NEXT_PUBLIC_API_URL ;
 
 
 const axiosJWTInstance = axios.create({
@@ -17,7 +18,7 @@ axiosJWTInstance.interceptors.request.use(
       return request;
     },
     (error) => {
-      return Promise.reject(error);
+      return Promise.reject(new Error("Request failed : ", error));
     }
   );
   
@@ -32,8 +33,8 @@ axiosJWTInstance.interceptors.response.use((response)=>{
       if(error.response.status === 401 && !originalRequest._retry) {
         originalRequest._retry = true;
         try {
-            const response = await axios.post(`${API_HOST}/auth/refresh`, {}, { withCredentials: true });
-                // const { accessToken } = response.data;
+             await axios.post(`${API_HOST}/auth/refresh`, {}, { withCredentials: true });
+
                 
 
                 return axiosJWTInstance(originalRequest);
@@ -46,10 +47,10 @@ axiosJWTInstance.interceptors.response.use((response)=>{
                 window.location.href = "/login";
               
             }
-            return Promise.reject(refreshError);
+            return Promise.reject(new Error("Token refresh failed"));
         }
         }
-      return Promise.reject(error);
+      return Promise.reject(new Error("Response Failed"));
 })
 
 

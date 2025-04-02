@@ -1,25 +1,37 @@
 "use client"
-import BlogAll from "@/components/blog/blog-all";
-import MyBlog from "@/components/blog/blog-my";
-import { useAuth } from "@/context/auth-context";
-import {axiosJWTInstance} from "@/utils/http";
-import Link from "next/link";
-import { useEffect, useState } from "react";
 
+import MyBlog from "@/components/blog/blog-my";
+import { Blog } from "@/types/blog";
+import {axiosJWTInstance} from "@/utils/http";
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 export default function UserProfile() {
-   const {user} = useAuth();
+    const [data, setData] = useState<Blog[]>([])
+    
+    // Fetch blog data when the component mounts
+
     
   useEffect(()=>{
-    const fetchUser = async () => {
+    const fetchBlog = async () => {
         try {
-            const response = await axiosJWTInstance.get("/auth/me");
-            console.log(response.data);
+            const response = await axiosJWTInstance.get("/blog/me");
+            const data = response.data;
+            setData(data);
         }
         catch (error) {
-            console.error("Error fetching user data:", error);
+            if(axios.isAxiosError(error)){
+                toast.error('Failed to fetch data',{
+                    description: 'Something went wrong, try again',
+                })
+                
+            }
         }
     };
-    fetchUser();    
+
+    
+      fetchBlog();    
+    
   },[])
     
     return (
@@ -28,7 +40,7 @@ export default function UserProfile() {
                      <div>
                        <h1 className="text-2xl font-bold tracking-tight ">My Blogs</h1>
                      </div>
-                     <MyBlog/>
+                     <MyBlog blogs={data} setData={setData}/>
                  </div>
         </main>
     );

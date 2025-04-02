@@ -20,14 +20,14 @@ const ProtectedRoute: React.FC<ProtectRouteProps> = ({ children, requiredRoles }
         // Check if user is authenticated and has the required roles
           if (!loading && !isAuthenticated) {
             router.replace('/login');
-            return;
+            
           }
           
           if (!loading && requiredRoles.length > 0 && !hasRole(requiredRoles)) {
             router.replace('/unauthorized');
-            return;
+            
           }
-      }, [isAuthenticated, requiredRoles, router, hasRole]);
+      }, [isAuthenticated, requiredRoles, router, hasRole,loading]);
       
       if (loading) {
         return <Loading/>

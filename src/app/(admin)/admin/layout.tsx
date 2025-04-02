@@ -1,10 +1,12 @@
 import { AdminSideBar } from "@/components/admin/admin-sidebar";
-import { SiteHeader } from "@/components/admin/site-header";
-import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { Role } from "@/enum/role.enum";
 import ProtectedRoute from "@/utils/protect-route";
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+export default function AdminLayout({ children }:  Readonly<{
+    children: React.ReactNode;
+  }>) {
 
     return (
         <ProtectedRoute requiredRoles={[Role.ADMIN]}>
@@ -18,7 +20,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 >
                 <AdminSideBar variant="inset"/>
                 <SidebarInset>
-                    <SiteHeader />
                     {children}
                 </SidebarInset>
 

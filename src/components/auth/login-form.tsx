@@ -1,17 +1,25 @@
 "use client";
 
 import Link from "next/link";
-import { FormEvent } from "react";
+import { FormEvent, useEffect } from "react";
 import { FcGoogle } from "react-icons/fc";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/auth-context";
 import { Button } from "../ui/button";
-import { toast } from "sonner"
-import { Separator } from "../ui/separator";
+
+
 
 export default function LoginhtmlForm() {
 	const router = useRouter();
 	const auth = useAuth();
+
+	useEffect(() => {
+		if (auth.isAuthenticated) {
+			router.push("/");
+		}
+	}
+	, [auth.isAuthenticated, router]);
+
 	const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
 
@@ -21,15 +29,13 @@ export default function LoginhtmlForm() {
 			formDataJson[key] = value;
 		});
 		
-		try {
+	
 			await auth.login(formDataJson);  // Make sure login is awaited
-		  } catch (error) {
-			toast.error("Incorrect Email or Password.");
-		  }
+		  
 	};
 
 	const onGoogleSubmit = async()=>{
-		window.open("http://localhost:3000/auth/google", "_self");
+		window.open(`${process.env.NEXT_PUBLIC_API_URL}/auth/google`, "_self");
 	}
 	return (
 		<section className="self-center align-middle w-full h-fit">

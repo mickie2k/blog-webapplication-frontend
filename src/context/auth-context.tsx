@@ -1,10 +1,12 @@
 "use client"
 
 import {axiosInstance, axiosJWTInstance} from "@/utils/http";
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Role } from "@/enum/role.enum";
 import { User } from "@/types/user";
+import axios from "axios";
+import { toast } from "sonner";
 
 
 
@@ -33,10 +35,12 @@ const AuthContext = createContext<AuthContextType>({
 
 export const AuthProvider = ({ children }: Readonly<{ children: React.ReactNode }>) => {
     const router = useRouter();
-    const [loading, isLoading] = useState(true);
+    const [loading, setLoading] = useState(true);
     const [user,setUser] = useState<User | null>(null);
+    
 
-    const checkAuthStatus = async ()=>{
+      
+    const checkAuthStatus = useCallback(async ()=>{
         console.log("checkAuthStatus")
         try{
             const response = await axiosJWTInstance.get("/auth/me",{
@@ -46,20 +50,22 @@ export const AuthProvider = ({ children }: Readonly<{ children: React.ReactNode 
             
             
         }catch(error){
-           
+            console.log(error)
             setUser(null);
+            
+           
         }finally{
-            isLoading(false);
+            setLoading(false);
         }
-    }
+    },[])
 
     useEffect(() => {
        checkAuthStatus();
     }
-    , []);
+    , [checkAuthStatus]);
 
 
-    const login = async (formDataJson: { [key: string]: FormDataEntryValue } ) => {
+    const login = useCallback(async (formDataJson: { [key: string]: FormDataEntryValue } ) => {
         try {
 			const response = await axiosInstance.post("/auth/login", formDataJson) 
 				if(response.status == 201){
@@ -70,13 +76,22 @@ export const AuthProvider = ({ children }: Readonly<{ children: React.ReactNode 
 				}
 			
 		} catch (error) {
-            console.error('Login failed:', error);
-            return Promise.reject(); // Reject the promise to handle it in the component
+            if(axios.isAxiosError(error)) {
+				toast.error("Incorrect Email or Password.",{
+					position: 'top-center',
+					description: 'Please try again',
+				});
+			}else{
+				toast.error("Something went wrong.",{
+					position: 'top-center',
+					description: 'Please try again',
+				});
+			}
 		}
 
-    }
+    }, [checkAuthStatus, router])
 
-    const logout = async () => {
+    const logout = useCallback(async () => {
         try {
             const response = await axiosJWTInstance.get("/auth/logout");
             if (response.status === 200) {
@@ -86,9 +101,9 @@ export const AuthProvider = ({ children }: Readonly<{ children: React.ReactNode 
         } catch (error) {
             console.error("Logout failed:", error);
         }
-    }
+    },[router])
 
-    const hasRole = (role: Role | Role[]) => {
+    const hasRole = useCallback((role: Role | Role[]) => {
         if (!user) return false;
         
         if (Array.isArray(role)) {
@@ -96,10 +111,20 @@ export const AuthProvider = ({ children }: Readonly<{ children: React.ReactNode 
         }
         
         return user.role === role;
-      };
+      },[user]);
+
+      const value = useMemo(() => ({
+        user,
+        login,
+        logout,
+        hasRole,
+        isAuthenticated: !!user,
+        checkAuthStatus,
+        loading,
+      }), [user, loading, login, logout, hasRole,checkAuthStatus]); // Only recompute when user or loading changes
     
     return (
-        <AuthContext.Provider value={{user, login, logout, hasRole, isAuthenticated: !!user, checkAuthStatus, loading}}>
+        <AuthContext.Provider value={value}>
             {children}
         </AuthContext.Provider>
     );

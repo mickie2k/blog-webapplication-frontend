@@ -1,10 +1,17 @@
+import { BlogComment } from '@/types/blog'
 import React from 'react'
 
-export default function CommentCard() {
+interface CommentCardProps {
+  comment : BlogComment
+}
+
+export default function CommentCard(props:  Readonly<CommentCardProps>) {
+  const { comment } = props
+
   return (
     <div className='flex flex-col gap-1'>
-        <h6 className='text-sm font-medium'>Mickie2k</h6>
-        <p className='text-sm'>Lorem ipsum dolor sit amet consectetur adipisicing elit. Laboriosam, sed!</p>
+        <h6 className='text-sm font-medium'>{comment.authorName}</h6>
+        <p className='text-sm'>{comment.content}</p>
     </div>
   )
 }

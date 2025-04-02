@@ -1,20 +1,61 @@
 "use client"
-import React from 'react'
-import { Separator } from "@/components/ui/separator"
-import CommentForm from '@/components/blog/comment/comment-form'
-import CommentCard from '@/components/blog/comment/comment-card'
-import { Textarea } from '@/components/ui/textarea'
-import { Button } from '@/components/ui/button'
+import React, { useEffect } from 'react'
+
 import BlogForm from '@/components/blog/form/blog-form'
+import { axiosJWTInstance } from '@/utils/http'
+import { BlogFormValue } from '@/types/blog'
+import {useRouter} from 'next/navigation'
+import { toast } from 'sonner'
+import { useAuth } from '@/context/auth-context'
+import axios from 'axios'
 
 export default function NewBlogPage() {
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault()
-        const formData = new FormData(e.currentTarget)
-        const title = formData.get('title')
-        const content = formData.get('content')
-        console.log({ title, content })
+    const { isAuthenticated, loading  } = useAuth()
+    const router = useRouter()
+    useEffect(()=>{
+       
+        if(!loading && !isAuthenticated){
+            router.push('/login')
+        }
+
+    },[isAuthenticated,loading,router])
+    const handleSubmit = async (value : BlogFormValue) => {
+      
+        console.log(value)
+
+        try {
+            const res = await axiosJWTInstance.post('/blog', value)
+            const data = res.data
+            if(res.status === 201) {
+                toast('Blog has been published',{
+                    action: {
+                        label: 'Result',
+                        onClick: () => router.push(`/blog/${data.id}`)
+                    },
+                    position: 'top-center',
+                })
+                }else{
+                    throw new Error('Failed to publish a blog')
+                }
+        }
+        catch (error) {
+            if(axios.isAxiosError(error)) {
+                toast.error('Failed to publish',{
+                    description: 'Something went wrong, try again',
+                    position: 'top-center',
+                })
+            }else{
+                toast.error('Something went wrong, try again',{
+                            position: 'top-center',
+                        })
+            }
+            
+        }
+
+
+       
+
     }
     return (
         <div>
@@ -23,10 +64,7 @@ export default function NewBlogPage() {
                 <BlogForm handleSubmit={handleSubmit} />
 
             </div>
-            <div className='fixed bottom-0 flex py-4 justify-end px-4 w-full border-t border-border'>
-                
-                <Button className=''>Publish</Button>
-            </div>
+            
         </div>
     )
 }

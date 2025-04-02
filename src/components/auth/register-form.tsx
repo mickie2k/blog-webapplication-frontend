@@ -1,14 +1,25 @@
 "use client";
 
 import Link from "next/link";
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { axiosInstance } from "@/utils/http";
 import PasswordChecklist from "react-password-checklist"
+import { useAuth } from "@/context/auth-context";
+import { toast } from "sonner";
+import { Button } from "../ui/button";
 
 export default function RegisterForm() {
 	const [password, setPassword] = useState("")
 	const router = useRouter();
+	const auth = useAuth();
+
+
+	useEffect(() => {
+		if (auth.isAuthenticated) {
+			router.push("/");
+		}
+	}, [auth.isAuthenticated, router]);
 	const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
 
@@ -19,39 +30,49 @@ export default function RegisterForm() {
 		});
 
 
-		const response = await axiosInstance.post(
+		await axiosInstance.post(
 			"/auth/register",
 			formDataJson
 		).then((response) => {
-			if(response.status == 201){
-				alert("Register success")
-				router.push("/login")
-			}else{
-				alert(response.data.message)
+			if (response.status == 201) {
+				toast("Success",{
+					description: 'Account has been created',
+					action:{
+						label: 'Login',
+						onClick: () => router.push('/login')
+					},
+					position: 'top-center',
+				})
+			} else {
+				toast.warning(response.data.message,{
+					position: 'top-center',
+				})
 			}
 		}
 		).catch((error) => {
 			// Handle error here
-			alert(error.response.data.message)
+			toast.error(error.response.data.message,{
+				position: 'top-center',
+			})
 		})
-		
-		
 
-		
+
+
+
 	};
 	return (
-		<section className="bg-white mt-7">
-			<div className="flex flex-col items-center  px-6 py-0 mx-auto md:h-full lg:py-0 ">
-				<h1 className="flex items-center mb-6 text-2xl font-bold text-gray-900 ">
-					Sign Up
+		<section className="self-center align-middle w-full h-fit">
+			<div className="flex w-full flex-col items-center gap-4  px-6 py-0 mx-auto md:h-full lg:py-0 ">
+				<h1 className="flex items-center mb-6 text-2xl font-bold  ">
+					Create your account
 				</h1>
-				<div className="w-full bg-transparent border-[#E2E2E2]  border-t  md:mt-0 sm:max-w-md xl:p-0 ">
-					<div className="p-6 space-y-4 md:space-y-6 sm:p-8">
+				<div className="w-full bg-transparent  md:mt-0 sm:max-w-md xl:p-0 ">
+					<div className="px-6 space-y-4 md:space-y-6">
 						<form className="space-y-4 md:space-y-6" onSubmit={onSubmit}>
 							<div>
 								<label
 									htmlFor="name"
-									className="block mb-2 text-sm font-medium text-gray-900 "
+									className="block mb-2 text-sm font-medium  "
 								>
 									Your Fullname
 								</label>
@@ -59,7 +80,7 @@ export default function RegisterForm() {
 									type="text"
 									name="firstName"
 									id="firstName"
-									className="bg-gray-50 border border-gray-300 text-gray-900 rounded-t-lg  block w-full p-2.5 "
+									className=" border-border border bg-input/30   rounded-t-lg  block w-full p-2.5 "
 									placeholder="First name"
 									required
 								/>
@@ -67,7 +88,7 @@ export default function RegisterForm() {
 									type="text"
 									name="lastName"
 									id="lastName"
-									className="bg-gray-50 border border-gray-300 text-gray-900 rounded-b-lg  block w-full p-2.5 "
+									className="border-border border bg-input/30    rounded-b-lg  block w-full p-2.5 "
 									placeholder="Last name"
 									required
 								/>
@@ -75,7 +96,7 @@ export default function RegisterForm() {
 							<div>
 								<label
 									htmlFor="username"
-									className="block mb-2 text-sm font-medium text-gray-900 "
+									className="block mb-2 text-sm font-medium  "
 								>
 									Your Username
 								</label>
@@ -83,7 +104,7 @@ export default function RegisterForm() {
 									type="username"
 									name="username"
 									id="username"
-									className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg  block w-full p-2.5 "
+									className="border-border border bg-input/30   rounded-lg  block w-full p-2.5 "
 									placeholder="username"
 									required
 								/>
@@ -91,7 +112,7 @@ export default function RegisterForm() {
 							<div>
 								<label
 									htmlFor="username"
-									className="block mb-2 text-sm font-medium text-gray-900 "
+									className="block mb-2 text-sm font-medium  "
 								>
 									Your Email
 								</label>
@@ -99,7 +120,7 @@ export default function RegisterForm() {
 									type="email"
 									name="email"
 									id="email"
-									className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg  block w-full p-2.5 "
+									className="border-border border bg-input/30    rounded-lg  block w-full p-2.5 "
 									placeholder="email"
 									required
 								/>
@@ -107,7 +128,7 @@ export default function RegisterForm() {
 							<div>
 								<label
 									htmlFor="password"
-									className="block mb-2 text-sm font-medium text-gray-900 "
+									className="block mb-2 text-sm font-medium  "
 								>
 									Password
 								</label>
@@ -116,31 +137,31 @@ export default function RegisterForm() {
 									name="password"
 									id="password"
 									placeholder="••••••••"
-									className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg  block w-full p-2.5"
+									className="border-border border bg-input/30  mb-2  rounded-lg  block w-full p-2.5"
 									required
 									onChange={e => setPassword(e.target.value)}
 								/>
 
-							{password && (<PasswordChecklist
-									rules={["minLength","specialChar","number","capital"]}
+								{password && (<PasswordChecklist
+									rules={["minLength", "specialChar", "number", "capital"]}
 									minLength={8}
 									value={password}
-									onChange={(isValid) => {}}
+									iconSize={12}
+									
+									
 								/>)}
-								
+
 							</div>
 
-							<button
-								type="submit"
-								className="w-full text-white bg-black hover:bg-neutral-900 focus:ring-4 focus:outline-none  font-medium rounded-lg text-sm px-5 py-2.5 text-center cursor-pointer "
-							>
-								Sign up
-							</button>
-							<p className="text-sm font-light text-gray-500 ">
+							<Button className="w-full " type="submit" variant="default" size="lg" >
+									Sign up
+								</Button>
+							
+							<p className="text-sm  text-zinc-400 ">
 								Already have an account?{" "}
 								<Link
 									href="/login"
-									className="font-medium text-gray-600 hover:underline "
+									className="font-medium text-zinc-300 hover:underline "
 								>
 									Sign in
 								</Link>
